@@ -1,5 +1,5 @@
 import createJWKSMock from 'mock-jwks'
-import { checkScopesAndResolve } from '../auth'
+import { createcheckScopesAndResolve } from '../auth'
 
 import { APIGatewayProxyEvent } from 'aws-lambda'
 
@@ -7,12 +7,15 @@ const TOKEN_ISSUER = 'https://test-app.com/'
 
 describe('Given an event with an [INCORRECT] scope', () => {
   it('Returned - You are not authorized!', async () => {
-    // const jwksMock = await createJwksContext();
-    process.env.JWKS_URI = 'https://test-app.com/.well-known/jwks.json'
-    process.env.TOKEN_ISSUER = TOKEN_ISSUER
-    process.env.AUDIENCE = 'https://test-app.com/test/'
     const jwksMock = createJWKSMock(TOKEN_ISSUER)
     await jwksMock.start()
+
+    const checkScopesAndResolve = createcheckScopesAndResolve({
+      jwksUri: 'https://test-app.com/.well-known/jwks.json',
+      issuer: TOKEN_ISSUER,
+      audience: 'https://test-app.com/test/',
+    })
+
     const accessToken = jwksMock.token({
       aud: ['https://test-app.com/test/'],
       iss: TOKEN_ISSUER,

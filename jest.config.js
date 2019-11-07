@@ -4,5 +4,8 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/__utils.ts'
+  ],
+  setupFiles: [
+    "dotenv/config"
   ]
 };
