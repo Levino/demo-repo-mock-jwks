@@ -6,18 +6,17 @@ import util from 'util'
 
 import { APIGatewayProxyEvent } from 'aws-lambda'
 
+const client = jwksClient({
+  cache: true,
+  rateLimit: true,
+  jwksRequestsPerMinute: 10,
+  jwksUri: process.env.JWKS_URI || '',
+})
+
+const retrieveSigningKey = util.promisify(client.getSigningKey)
+
 const getSigningKey = async (keyId: string): Promise<string> => {
-  const client = jwksClient({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 10,
-    jwksUri: process.env.JWKS_URI || '',
-  })
-
-  const retrieveSigningKey = util.promisify(client.getSigningKey)
-
   const retrievedKey = await retrieveSigningKey(keyId)
-
   return (
     (retrievedKey as jwksClient.CertSigningKey).publicKey ||
     (retrievedKey as jwksClient.RsaSigningKey).rsaPublicKey
