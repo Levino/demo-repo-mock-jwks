@@ -27,10 +27,13 @@ describe('Given an event with an [INCORRECT] scope', () => {
       authorization: `Bearer ${accessToken}`,
     })
 
-    expect(
-      checkScopesAndResolve(mockedEvent, ['incorrect scope']),
-    ).resolves.toThrow('Error: You are not authorized!')
-    await jwksMock.stop()
+    try {
+      await checkScopesAndResolve(mockedEvent, ['incorrect scope'])
+    } catch (error) {
+      expect(error.message).toEqual('Error: You are not authorized!')
+    } finally {
+      await jwksMock.stop()
+    }
   })
 })
 
